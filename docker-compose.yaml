@@ -1,0 +1,25 @@
+services:
+  stats:
+    image: ghcr.io/goose-ws/superseriousstats-docker:latest
+    container_name: sss
+    hostname: sss
+    ports:
+      - "8080:8080" # If not reverse proxying
+    volumes:
+      # 1. Mount your ENTIRE logs directory (Read-Only recommended)
+      - /home/user/.weechat/logs:/app/logs:ro
+      # 2. Configuration files (One .conf per channel)
+      - ./sss/config:/app/config
+      # 3. Persistent Database Storage
+      - ./sss/db:/app/db
+      # 4. Generated HTML Output
+      - ./sss/html:/app/html
+      # Timezone
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-file: "1"
+        max-size: "10M"
