@@ -53,13 +53,27 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # --- NEW STEP: Generate tags automatically ---
+      - name: Extract Docker metadata
+        id: meta
+        if: steps.check.outputs.update_needed == 'true' || github.event_name == 'workflow_dispatch'
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=raw,value={{date 'YYYY-MM-DD'}}
+            type=sha,format=short
+
+      # --- UPDATED STEP: Use the generated tags ---
       - name: Build and push Docker image
         if: steps.check.outputs.update_needed == 'true' || github.event_name == 'workflow_dispatch'
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
       - name: Update state
         if: steps.check.outputs.update_needed == 'true'
