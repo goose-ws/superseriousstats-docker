@@ -1,22 +1,22 @@
 FROM alpine:3.23
 
-# Install dependencies
+# Install dependencies (Updated to php83)
 RUN apk add --no-cache \
     bash \
     curl \
     git \
     nginx \
-    php82 \
-    php82-ctype \
-    php82-curl \
-    php82-dom \
-    php82-fpm \
-    php82-mbstring \
-    php82-pdo \
-    php82-pdo_sqlite \
-    php82-session \
-    php82-sqlite3 \
-    php82-zlib \
+    php83 \
+    php83-ctype \
+    php83-curl \
+    php83-dom \
+    php83-fpm \
+    php83-mbstring \
+    php83-pdo \
+    php83-pdo_sqlite \
+    php83-session \
+    php83-sqlite3 \
+    php83-zlib \
     sqlite \
     supervisor \
     su-exec \
@@ -32,22 +32,19 @@ WORKDIR /app
 RUN git clone https://github.com/tommyrot/superseriousstats.git . && \
     rm -rf .git
 
-# 2. Create directories
-RUN mkdir -p /app/html /app/logs /app/db /app/config /run/php /run/nginx /var/lib/nginx/tmp /var/log/nginx /var/log/php82 && \
-    chown -R sss:sss /app /run/php /run/nginx /var/lib/nginx /var/log/nginx /var/log/php82
+# 2. Create directories (Updated to php83)
+RUN mkdir -p /app/html /app/logs /app/db /app/config /run/php /run/nginx /var/lib/nginx/tmp /var/log/nginx /var/log/php83 && \
+    chown -R sss:sss /app /run/php /run/nginx /var/lib/nginx /var/log/nginx /var/log/php83
 
 # Copy configuration files
 COPY root/ /
 
 # 3. Create the SMARTER stats-loop script
-# - Syncs CSS/Favicon to the html folder
-# - Generates an index.html listing all channels
-# - Runs the stats generation
 RUN printf '#!/bin/bash\n\
 while true; do\n\
     echo "[Stats] Starting update cycle..."\n\
     \n\
-    # 1. Sync Assets (Fixes 404 on CSS/Favicon)\n\
+    # 1. Sync Assets\n\
     cp /app/sss.css /app/html/ 2>/dev/null\n\
     cp /app/favicon.svg /app/html/ 2>/dev/null\n\
     if [ -d /app/userpics ]; then cp -r /app/userpics /app/html/; fi\n\
@@ -83,8 +80,8 @@ while true; do\n\
                 chown sss:sss "$db_path" 2>/dev/null\n\
             fi\n\
             \n\
-            # Run Generator\n\
-            /usr/bin/php82 /app/sss.php -c "$conf" -i "$log_target" -o "/app/html/$name.html"\n\
+            # Run Generator (Updated to php83)\n\
+            /usr/bin/php83 /app/sss.php -c "$conf" -i "$log_target" -o "/app/html/$name.html"\n\
         else\n\
             echo "[Stats] Skipping $name: Logs not found at $log_target"\n\
         fi\n\

@@ -6,7 +6,7 @@ echo "Fixing permissions..."
 
 # Directories that need to be writable by 'sss'
 # We check and chown them to ensure the services can start
-for dir in /app/db /app/html /app/config /run/php /run/nginx /var/lib/nginx /var/log/nginx /var/log/php82; do
+for dir in /app/db /app/html /app/config /run/php /run/nginx /var/lib/nginx /var/log/nginx /var/log/php83; do
     if [ -d "$dir" ]; then
         chown -R sss:sss "$dir"
     fi
