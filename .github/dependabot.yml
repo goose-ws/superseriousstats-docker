@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # Maintain the Docker Base Image (Alpine)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Maintain the GitHub Actions (checkout, build-push, etc.)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
