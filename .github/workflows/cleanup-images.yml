@@ -1,0 +1,26 @@
+name: Cleanup Old Images
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Runs every Sunday at midnight
+  workflow_dispatch:    # Allows manual triggering
+
+jobs:
+  clean-ghcr:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write # Required to delete packages
+
+    steps:
+      - name: Delete old image versions
+        uses: actions/delete-package-versions@v5
+        with:
+          # The name of your package in GHCR (usually matches repo name)
+          package-name: 'superseriousstats-docker'
+          package-type: 'container'
+          
+          # Keep the 90 most recent versions (about three months of history)
+          min-versions-to-keep: 90
+          
+          # Protect the 'latest' tag from ever being deleted
+          ignore-versions: 'latest'
