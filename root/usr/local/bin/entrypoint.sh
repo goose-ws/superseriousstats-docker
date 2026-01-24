@@ -7,7 +7,7 @@ echo "Fixing permissions..."
 # Directories that need to be writable by 'sss'
 # We check and chown them to ensure the services can start
 for dir in /app/db /app/html /app/config /run/php /run/nginx /var/lib/nginx /var/log/nginx /var/log/php83; do
-    if [ -d "$dir" ]; then
+    if [[ -d "$dir" ]]; then
         chown -R sss:sss "$dir"
     fi
 done
@@ -20,7 +20,7 @@ DEFAULT_CONF="/app/config/default.conf"
 if ! ls /app/config/*.conf >/dev/null 2>&1; then
     echo "No config files found. Generating default.conf..."
     
-    cat <<EOF > "$DEFAULT_CONF"
+    cat <<EOF > "${DEFAULT_CONF}"
 channel = "${SSS_CHANNEL:-#test}"
 parser = "${SSS_PARSER:-irssi}"
 timezone = "${SSS_TIMEZONE:-UTC}"
@@ -37,17 +37,17 @@ favicon = "favicon.svg"
 xxl = "false"
 EOF
     # Ensure the user can read/write the generated config
-    chown sss:sss "$DEFAULT_CONF"
+    chown sss:sss "${DEFAULT_CONF}"
 
     # Symlink logs for backward compatibility if needed
-    if [ ! -d "/app/logs/default" ] && [ -d "/app/logs" ]; then
+    if [[ ! -d "/app/logs/default" ]] && [[ -d "/app/logs" ]]; then
         ln -s /app/logs /app/logs/default 2>/dev/null || true
     fi
 fi
 
 # Update web.php path ONLY if we are in single-channel mode
-if [ -f "/app/db/stats.db" ]; then
-    if [ -f "web.php" ]; then
+if [[ -f "/app/db/stats.db" ]]; then
+    if [[ -f "web.php" ]]; then
         sed -i "s|%CHANGEME%|/app/db/stats.db|g" web.php
     fi
 fi
